@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calendar Features | ULapland Flow</title>
+    <link rel="stylesheet" href="../../shared/site.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="Tool selection">
+      <div class="site-nav__inner">
+        <a class="site-nav__brand" href="../../index.html">ULapland Flow</a>
+        <div class="site-nav__links">
+          <a class="site-nav__link" href="../calendar/" aria-current="page">Calendar Features</a>
+          <a class="site-nav__link" href="../data-sources/">Data Sources Timeline</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <section class="toolbar" aria-label="Calendar controls">
+        <div>
+          <p class="eyebrow">Helsinki-Vantaa forecast calendar</p>
+          <h1>Calendar Features</h1>
+        </div>
+        <div class="month-controls">
+          <button class="icon-button" id="previousMonth" type="button" aria-label="Previous month">
+            <span aria-hidden="true">‹</span>
+          </button>
+          <div class="current-month" id="currentMonth">Loading</div>
+          <button class="icon-button" id="nextMonth" type="button" aria-label="Next month">
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="summary-strip" aria-label="Month summary">
+        <div>
+          <span class="summary-label">School holiday intensity</span>
+          <strong id="monthIntensity">0%</strong>
+        </div>
+        <div>
+          <span class="summary-label">Public holidays</span>
+          <strong id="monthPublicHolidays">0</strong>
+        </div>
+        <div>
+          <span class="summary-label">Peak date</span>
+          <strong id="monthPeakDate">-</strong>
+        </div>
+        <div>
+          <span class="summary-label">Rows loaded</span>
+          <strong id="rowsLoaded">0</strong>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <aside class="filters" aria-label="Display filters">
+          <h2>Signals</h2>
+          <label>
+            <input id="showPublicHolidays" type="checkbox" checked>
+            Public holidays
+          </label>
+          <label>
+            <input id="showSchoolHolidays" type="checkbox" checked>
+            School holidays
+          </label>
+          <label>
+            <input id="showTermEvents" type="checkbox" checked>
+            School starts and ends
+          </label>
+
+          <div class="legend" aria-label="Legend">
+            <h2>Intensity</h2>
+            <div><span class="swatch swatch-low"></span> Low</div>
+            <div><span class="swatch swatch-mid"></span> Medium</div>
+            <div><span class="swatch swatch-high"></span> High</div>
+            <div><span class="swatch swatch-public"></span> Public holiday</div>
+          </div>
+        </aside>
+
+        <section class="calendar-panel" aria-label="Calendar month view">
+          <div class="weekdays" aria-hidden="true">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <aside class="details" aria-label="Selected date details">
+          <div class="details-date" id="detailsDate">Select a date</div>
+          <div class="details-tags" id="detailsTags"></div>
+          <dl id="detailsList"></dl>
+        </aside>
+      </section>
+    </main>
+
+    <script src="data/calendar_features.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,419 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f4ee;
+  --panel: #ffffff;
+  --ink: #17201b;
+  --muted: #657068;
+  --line: #d8d3c8;
+  --teal: #0f766e;
+  --green: #6f9f39;
+  --amber: #d08b1f;
+  --red: #b94b42;
+  --blue: #2c6faa;
+  --shadow: 0 18px 40px rgba(36, 31, 21, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 28px;
+}
+
+.toolbar,
+.summary-strip,
+.content-grid {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 0.94rem;
+}
+
+.month-controls {
+  display: grid;
+  grid-template-columns: 44px minmax(210px, auto) 44px;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+
+.icon-button span {
+  display: block;
+  font-size: 1.7rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.current-month {
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  font-weight: 800;
+  box-shadow: var(--shadow);
+}
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.summary-strip > div {
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.summary-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.summary-strip strong {
+  font-size: 1.45rem;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 310px;
+  gap: 14px;
+  align-items: start;
+}
+
+.filters,
+.calendar-panel,
+.details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.filters,
+.details {
+  padding: 16px;
+}
+
+.filters {
+  display: grid;
+  gap: 12px;
+}
+
+.filters label,
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 28px;
+  color: var(--muted);
+}
+
+.filters input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--teal);
+}
+
+.legend {
+  display: grid;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.swatch-low {
+  background: #dcecc8;
+}
+
+.swatch-mid {
+  background: #f1d28d;
+}
+
+.swatch-high {
+  background: #e7978e;
+}
+
+.swatch-public {
+  background: #c8dcf1;
+}
+
+.calendar-panel {
+  padding: 14px;
+  overflow: hidden;
+}
+
+.weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.weekdays {
+  gap: 8px;
+  padding-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.calendar-grid {
+  gap: 8px;
+}
+
+.day {
+  position: relative;
+  min-height: 118px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfaf6;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.day:hover,
+.day:focus-visible,
+.day.selected {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+.day.outside {
+  opacity: 0.35;
+}
+
+.day.weekend {
+  background: #f0eee7;
+}
+
+.day.intensity-low {
+  background: #eff6e7;
+  border-color: #cfe2b6;
+}
+
+.day.intensity-mid {
+  background: #fff2cf;
+  border-color: #e3bd65;
+}
+
+.day.intensity-high {
+  background: #fde3df;
+  border-color: #df8b82;
+}
+
+.day.public-holiday {
+  box-shadow: inset 0 -4px 0 var(--blue);
+}
+
+.day-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.weight {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.day-labels {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.pill {
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #e8ece8;
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pill.public {
+  background: #dceaf8;
+  color: #174c75;
+}
+
+.pill.school {
+  background: #eaf2dd;
+  color: #3f641f;
+}
+
+.pill.event {
+  background: #f7e7c8;
+  color: #765113;
+}
+
+.details {
+  min-height: 420px;
+}
+
+.details-date {
+  font-size: 1.35rem;
+  font-weight: 850;
+}
+
+.details-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 14px;
+}
+
+.details dl {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+.details dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.details dd {
+  margin: 3px 0 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1120px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .legend {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .toolbar,
+  .summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .month-controls {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+  }
+
+  .summary-strip {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .filters,
+  .legend {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-panel {
+    padding: 8px;
+    overflow-x: auto;
+  }
+
+  .weekdays,
+  .calendar-grid {
+    min-width: 720px;
+  }
+
+  .day {
+    min-height: 104px;
+  }
+}

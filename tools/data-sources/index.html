@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Sources Timeline | ULapland Flow</title>
+  <link rel="stylesheet" href="../../shared/site.css">
+  <style>
+    :root {
+      --bg: #f7f4ee;
+      --card: #ffffff;
+      --text: #17201b;
+      --muted: #657068;
+      --line: #d8d3c8;
+      --grid: #e6e0d5;
+      --accent: #0f766e;
+      --accent-soft: #dfeee9;
+      --bar: #6f9f39;
+      --bar-hover: #0f766e;
+      --available: #d08b1f;
+      --available-active: #b94b42;
+      --shadow: 0 18px 40px rgba(36, 31, 21, 0.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(700px, 1fr) 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+    }
+
+    .chart-panel {
+      padding: 18px 18px 10px;
+    }
+
+    .sidebar {
+      padding: 18px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .controls label {
+      font-size: 0.95rem;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    select, button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font: inherit;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover { background: #fbfaf6; }
+
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 8px 0 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-swatch {
+      width: 16px;
+      height: 10px;
+      border-radius: 4px;
+      background: var(--bar);
+    }
+
+    .legend-swatch.selected {
+      background: var(--bar-hover);
+    }
+
+    .legend-swatch--available {
+      background: var(--available);
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      overflow: visible;
+    }
+
+    .axis text, .grid-label {
+      fill: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid-line {
+      stroke: var(--grid);
+      stroke-width: 1;
+    }
+
+    .source-line {
+      stroke: #d8d3c8;
+      stroke-width: 1;
+    }
+
+    .timeline-bar {
+      fill: var(--bar);
+      rx: 8;
+      cursor: pointer;
+      transition: fill 0.15s ease, transform 0.15s ease;
+    }
+
+    .timeline-bar:hover,
+    .timeline-bar.active {
+      fill: var(--bar-hover);
+    }
+
+    .y-label {
+      fill: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .y-label:hover,
+    .y-label.active {
+      fill: var(--accent);
+      text-decoration: underline;
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .details-empty {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .details-title {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+    }
+
+    .details-meta {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .meta-box {
+      background: #fbfaf6;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .meta-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-weight: 700;
+    }
+
+    .details-text {
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .details-links {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .details-links a {
+      text-decoration: none;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--accent);
+      font-weight: 700;
+      background: var(--card);
+    }
+
+    .details-links a:hover {
+      background: var(--accent-soft);
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Tool selection">
+    <div class="site-nav__inner">
+      <a class="site-nav__brand" href="../../index.html">ULapland Flow</a>
+      <div class="site-nav__links">
+        <a class="site-nav__link" href="../calendar/">Calendar Features</a>
+        <a class="site-nav__link" href="../data-sources/" aria-current="page">Data Sources Timeline</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="header">
+      <h1 class="title">Data Sources Timeline</h1>
+    </div>
+
+    <div class="layout">
+      <section class="panel chart-panel">
+        <div class="controls">
+          <label>
+            Time scale
+            <select id="scaleSelect">
+              <option value="quarter">Quarters</option>
+            </select>
+          </label>
+          <button id="resetBtn" type="button">Clear selection</button>
+        </div>
+
+        <div class="legend">
+          <div class="legend-item"><span class="legend-swatch"></span><span>Currently available in project</span></div>
+          <div class="legend-item"><span class="legend-swatch legend-swatch--available"></span><span>Can be acquired</span></div>
+          <div class="legend-item"><span class="legend-swatch selected"></span><span>Selected source</span></div>
+        </div>
+
+        <svg id="timelineChart" viewBox="0 0 1160 620" aria-label="Timeline chart"></svg>
+      </section>
+
+      <aside class="panel sidebar" id="detailsPanel">
+        <div class="tag">Click a source</div>
+        <div class="details-empty">
+          Select any data source from the chart to show additional details here. This works well on GitHub Pages because everything is static and runs in the browser.
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const dataSources = [
+      {
+        id: "source_1",
+        name: "Weather",
+        owner: "Finnish Meteorological Institute",
+        granularity: "Per flight",
+        status: "Open Source",
+        description: "Contains information about weather conditions",
+        extensionNote: "Current integrated dataset ends in December 2026, but additional history can be acquired and appended if needed.",
+        segments: [
+          { start: "2024-03-01", end: "2024-10-31", type: "current", label: "Older archive available on request" },
+          { start: "2024-10-31", end: { relativeTo: "today" }, type: "available_on_request", label: "Additional future period available on request" }
+        ],
+        links: [
+          { label: "FMI", url: "https://en.ilmatieteenlaitos.fi/" },
+          { label: "Wiki", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/86/flights_weather" }
+        ]
+      },
+      {
+        id: "source_2",
+        name: "Finavia Flights. PAX amounts",
+        owner: "Finavia",
+        granularity: "Per flight",
+        status: "Historical",
+        description: "Data contains historical information about arrival and departure flights. Destination and amount of passengers (local and transfer). First dataset has entrance timing data from boarding pass scanner, while second dataset contains airline and flight number.",
+        segments: [
+          { start: "2023-11-01", end: "2024-10-31", type: "current"},
+          { start: "2025-04-01", end: "2026-03-31", type: "current"}
+        ],
+        links: [
+          { label: "Wiki", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/43/flights" }
+        ]
+      },
+      {
+        id: "source_7",
+        name: "Finavia API. Check-in desks",
+        owner: "Finavia",
+        granularity: "Per flight",
+        status: "Open Source",
+        description: "Data contains complimentary information about flights. The most interesting thing for us are check-in desks.",
+        extensionNote: "Data is available only in real time format - twice per day we collect 12 hours of data. Finavia doesn't store historical data in this open source",
+        segments: [
+          { start: "2025-05-28", end: "2025-08-29", type: "current"},
+          { start: "2026-04-08", end: { relativeTo: "today" }, type: "current"}
+        ],
+        links: [
+          { label: "Finavia public API", url: "https://apiportal.finavia.fi/" }
+        ]
+      },
+      {
+        id: "source_4",
+        name: "Aviation Edge API. Gates & airlines",
+        owner: "Aviation Edge",
+        granularity: "Per flight",
+        status: "Historical",
+        description: "Completes Finavia dataset with information about gates, actual timetable, airline and etc.",
+        extensionNote: "Possible to obtain more data, but the source is commercial and not free. Also historical data is limited for up to 6 month back?",
+        segments: [
+          { start: "2024-02-01", end: "2024-11-01", type: "current"},
+          { start: { relativeTo: "today", months: -6 }, end: { relativeTo: "today" }, type: "available_on_request" }
+        ],
+        links: [
+          { label: "Aviation Edge", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/4/Description-(Silver)" },
+          { label: "Wiki", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/95/Clean-data" }
+        ]
+      },
+      {
+        id: "source_5",
+        name: "Departure Hall LiDAR",
+        owner: "AGC Flow",
+        granularity: "Objects tracks, timestep 0.1 second",
+        status: "On-going",
+        description: "Clean version of AGC LiDAR data from departure hall. Contains tracks of passengers, their speed, direction, positions and size",
+        extensionNote: "Contract ending in October 2026?",
+        segments: [
+          { start: "2025-04-05", end: { relativeTo: "today" }, type: "current"}
+        ],
+        links: [
+          { label: "AGC Flow", url: "https://www.flow-analytics.io/" },
+          { label: "Wiki", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/95/Clean-data" }
+        ]
+      },
+      {
+        id: "source_3",
+        name: "Security Checkpoint counts",
+        owner: "Finavia/Xovis",
+        granularity: "10-min intervals",
+        status: "Historical",
+        description: "This dataset contains count of passengers in, out and queue length for both economic and priority class passengers from security checkpoint",
+        extensionNote: "Waiting for the new data package from Finavia",
+        segments: [
+          { start: "2024-04-01", end: "2024-10-31", type: "current"},
+        ],
+        links: [
+          { label: "Xovis", url: "https://www.xovis.com/" },
+          { label: "Wiki", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/11/xovis" }
+        ]
+      },
+      {
+        id: "source_6",
+        name: "Radar",
+        owner: "VTT",
+        granularity: "Unknown",
+        status: "On-going",
+        description: "VTT radar at different locations",
+        segments: [
+          { start: "2026-04-14", end: "2026-04-14", type: "current" }
+        ],
+      }
+
+    ];
+
+    const svg = document.getElementById('timelineChart');
+    const detailsPanel = document.getElementById('detailsPanel');
+    const scaleSelect = document.getElementById('scaleSelect');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let selectedId = null;
+
+    const margin = { top: 30, right: 30, bottom: 60, left: 220 };
+    const width = 1160;
+    const height = 620;
+    const innerWidth = width - margin.left - margin.right;
+    const rowHeight = 70;
+
+    function parseDate(value) {
+  if (typeof value === 'string') {
+    return new Date(value + 'T00:00:00');
+  }
+
+  if (value && value.relativeTo === 'today') {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+
+    if (typeof value.months === 'number') {
+      d.setMonth(d.getMonth() + value.months);
+    }
+    if (typeof value.days === 'number') {
+      d.setDate(d.getDate() + value.days);
+    }
+    if (typeof value.years === 'number') {
+      d.setFullYear(d.getFullYear() + value.years);
+    }
+
+    return d;
+  }
+
+  throw new Error('Unsupported date format');
+}
+    function drawSelectionBoundaries(item, minDate, maxDate) {
+  if (!item) return;
+
+  const boundaryDates = [];
+
+  item.segments.forEach(segment => {
+    boundaryDates.push({
+      date: parseDate(segment.start),
+      kind: 'start'
+    });
+    boundaryDates.push({
+      date: parseDate(segment.end),
+      kind: 'end'
+    });
+  });
+
+  boundaryDates.forEach(boundary => {
+    const x = xScale(boundary.date, minDate, maxDate);
+
+    const line = createSvgElement('line', {
+      x1: x,
+      y1: margin.top,
+      x2: x,
+      y2: height - margin.bottom,
+      stroke: boundary.kind === 'start' ? '#0f766e' : '#657068',
+      'stroke-width': 2,
+      'stroke-dasharray': '5,5',
+      opacity: 0.9
+    });
+    svg.appendChild(line);
+
+    const label = createSvgElement('text', {
+      x,
+      y: height - margin.bottom + 18,
+      'text-anchor': 'middle',
+      class: 'grid-label'
+    });
+    label.textContent = boundary.kind === 'start' ? 'Start' : 'End';
+    svg.appendChild(label);
+  });
+}
+
+    function formatDate(date, scale) {
+      const y = date.getFullYear();
+      if (scale === 'year') return String(y);
+      if (scale === 'quarter') return `Q${Math.floor(date.getMonth() / 3) + 1} ${y}`;
+      return date.toLocaleString('en', { month: 'short', year: 'numeric' });
+    }
+
+    function formatRange(start, end) {
+      const options = { year: 'numeric', month: 'short' };
+      return `${start.toLocaleDateString('en', options)} – ${end.toLocaleDateString('en', options)}`;
+    }
+
+    function generateTicks(minDate, maxDate, scale) {
+      const ticks = [];
+      const d = new Date(minDate);
+      d.setDate(1);
+      d.setHours(0, 0, 0, 0);
+
+      if (scale === 'year') {
+        d.setMonth(0);
+        while (d <= maxDate) {
+          ticks.push(new Date(d));
+          d.setFullYear(d.getFullYear() + 1);
+        }
+      } else if (scale === 'quarter') {
+        d.setMonth(Math.floor(d.getMonth() / 3) * 3);
+        while (d <= maxDate) {
+          ticks.push(new Date(d));
+          d.setMonth(d.getMonth() + 3);
+        }
+      } else {
+        while (d <= maxDate) {
+          ticks.push(new Date(d));
+          d.setMonth(d.getMonth() + 1);
+        }
+      }
+      return ticks;
+    }
+
+    function getDomain() {
+      const allStarts = dataSources.flatMap(source => source.segments.map(segment => parseDate(segment.start)));
+      const allEnds = dataSources.flatMap(source => source.segments.map(segment => parseDate(segment.end)));
+      const minDate = new Date(Math.min(...allStarts));
+      const maxDate = new Date(Math.max(...allEnds));
+      return { minDate, maxDate };
+    };
+    
+
+    function xScale(date, minDate, maxDate) {
+      const span = maxDate - minDate;
+      return margin.left + ((date - minDate) / span) * innerWidth;
+    }
+
+    function renderDetails(item) {
+      if (!item) {
+        detailsPanel.innerHTML = `
+          <div class="details-empty">
+            Select any data source from the chart to show additional details here
+          </div>
+        `;
+        return;
+      }
+
+      const currentSegments = item.segments.filter(segment => segment.type === 'current');
+      const requestSegments = item.segments.filter(segment => segment.type === 'available_on_request');
+
+      const formatSegments = (segments, emptyText) => {
+        if (!segments.length) return emptyText;
+        return segments
+          .map(segment => `${formatRange(parseDate(segment.start), parseDate(segment.end))}`)
+          .join('<br>');
+      };
+
+      const linksHtml = item.links && item.links.length
+        ? `<div class="details-links">${item.links.map(link => `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.label}</a>`).join('')}</div>`
+        : '';
+
+      detailsPanel.innerHTML = `
+        <div class="tag">${item.status}</div>
+        <h2 class="details-title">${item.name}</h2>
+        <div class="details-text">${item.description}</div>
+        <div class="details-meta">
+          <div class="meta-box">
+            <div class="meta-label">Current project coverage</div>
+            <div class="meta-value">${formatSegments(currentSegments, 'No currently integrated period')}</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Available on request</div>
+            <div class="meta-value">${formatSegments(requestSegments, 'No additional period indicated')}</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Owner</div>
+            <div class="meta-value">${item.owner}</div>
+          </div>
+          <div class="meta-box">
+            <div class="meta-label">Granularity</div>
+            <div class="meta-value">${item.granularity}</div>
+          </div>
+        </div>
+        <div class="details-text"><strong>Coverage note:</strong> ${item.extensionNote || 'No extra note provided.'}</div>
+        ${linksHtml}
+      `;
+    }
+
+    function createSvgElement(name, attrs = {}) {
+      const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+
+    function renderChart() {
+      svg.innerHTML = '';
+      const scale = scaleSelect.value;
+      const { minDate, maxDate } = getDomain();
+      const ticks = generateTicks(minDate, maxDate, scale);
+
+      const background = createSvgElement('rect', {
+        x: 0,
+        y: 0,
+        width,
+        height,
+        fill: '#ffffff',
+        rx: 8
+      });
+      svg.appendChild(background);
+
+      ticks.forEach(tick => {
+        const x = xScale(tick, minDate, maxDate);
+        const line = createSvgElement('line', {
+          x1: x,
+          y1: margin.top,
+          x2: x,
+          y2: height - margin.bottom,
+          class: 'grid-line'
+        });
+        svg.appendChild(line);
+
+        const label = createSvgElement('text', {
+          x,
+          y: height - 24,
+          'text-anchor': 'middle',
+          class: 'grid-label'
+        });
+        label.textContent = formatDate(tick, scale);
+        svg.appendChild(label);
+      });
+      const selectedItem = dataSources.find(item => item.id === selectedId);
+      drawSelectionBoundaries(selectedItem, minDate, maxDate);
+
+      dataSources.forEach((item, index) => {
+        const y = margin.top + index * rowHeight + 28;
+        const isActive = item.id === selectedId;
+
+        const sourceLine = createSvgElement('line', {
+          x1: margin.left,
+          y1: y + 14,
+          x2: width - margin.right,
+          y2: y + 14,
+          class: 'source-line'
+        });
+        svg.appendChild(sourceLine);
+
+        const label = createSvgElement('text', {
+          x: margin.left - 14,
+          y: y + 19,
+          'text-anchor': 'end',
+          class: `y-label ${isActive ? 'active' : ''}`
+        });
+        label.textContent = item.name;
+        label.addEventListener('click', () => {
+          selectedId = item.id;
+          renderChart();
+          renderDetails(item);
+        });
+        svg.appendChild(label);
+
+        item.segments.forEach(segment => {
+          const segmentStart = parseDate(segment.start);
+          const segmentEnd = parseDate(segment.end);
+          const x1 = xScale(segmentStart, minDate, maxDate);
+          const x2 = xScale(segmentEnd, minDate, maxDate);
+          const segmentWidth = Math.max(8, x2 - x1);
+
+          const fill = segment.type === 'current'
+            ? (isActive ? '#0f766e' : '#6f9f39')
+            : (isActive ? '#b94b42' : '#d08b1f');
+
+          const bar = createSvgElement('rect', {
+            x: x1,
+            y,
+            width: segmentWidth,
+            height: 28,
+            fill,
+            rx: 8,
+            cursor: 'pointer'
+          });
+
+          bar.addEventListener('click', () => {
+            selectedId = item.id;
+            renderChart();
+            renderDetails(item);
+          });
+
+          bar.appendChild(createSvgElement('title'));
+          bar.querySelector('title').textContent = `${item.name}: ${segment.label || segment.type} (${formatRange(segmentStart, segmentEnd)})`;
+          svg.appendChild(bar);
+        });
+      });
+
+      const axis = createSvgElement('line', {
+        x1: margin.left,
+        y1: height - margin.bottom,
+        x2: width - margin.right,
+        y2: height - margin.bottom,
+        stroke: '#d8d3c8',
+        'stroke-width': 1.5
+      });
+      svg.appendChild(axis);
+    }
+
+    scaleSelect.addEventListener('change', renderChart);
+    resetBtn.addEventListener('click', () => {
+      selectedId = null;
+      renderChart();
+      renderDetails(null);
+    });
+
+    renderChart();
+    renderDetails(null);
+  </script>
+</body>
+</html>
