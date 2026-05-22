@@ -25,7 +25,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -77,6 +78,16 @@ h2 {
   grid-template-columns: 44px minmax(210px, auto) 44px;
   align-items: center;
   gap: 8px;
+}
+
+.summary-month-control {
+  display: grid;
+  align-items: center;
+}
+
+.summary-month-control .month-controls {
+  width: 100%;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
 }
 
 .icon-button {
@@ -173,6 +184,30 @@ h2 {
   width: 18px;
   height: 18px;
   accent-color: var(--teal);
+}
+
+.month-jump {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.month-jump span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.month-jump select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfaf6;
+  color: var(--ink);
+  padding: 0 12px;
 }
 
 .legend {
@@ -371,6 +406,10 @@ h2 {
   .legend {
     grid-column: 1 / -1;
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .month-jump {
+    grid-column: 1 / -1;
   }
 }
 

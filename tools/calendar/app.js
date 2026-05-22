@@ -1,4 +1,4 @@
-const DATA_URL = "data/calendar_features_2025-01-01_2026-12-31.csv";
+const DATA_URL = "data/calendar_features_2023-01-01_2026-12-31.csv";
 
 const monthNames = new Intl.DateTimeFormat("en", { month: "long", year: "numeric" });
 const detailDateFormat = new Intl.DateTimeFormat("en", {
@@ -26,9 +26,9 @@ const elements = {
   monthIntensity: document.querySelector("#monthIntensity"),
   monthPublicHolidays: document.querySelector("#monthPublicHolidays"),
   monthPeakDate: document.querySelector("#monthPeakDate"),
-  rowsLoaded: document.querySelector("#rowsLoaded"),
   previousMonth: document.querySelector("#previousMonth"),
   nextMonth: document.querySelector("#nextMonth"),
+  monthSelect: document.querySelector("#monthSelect"),
   showPublicHolidays: document.querySelector("#showPublicHolidays"),
   showSchoolHolidays: document.querySelector("#showSchoolHolidays"),
   showTermEvents: document.querySelector("#showTermEvents"),
@@ -204,11 +204,27 @@ function updateSummary() {
 
   elements.monthIntensity.textContent = percent(intensity / Math.max(rows.length, 1));
   elements.monthPublicHolidays.textContent = String(publicHolidays);
-  elements.rowsLoaded.textContent = String(state.rows.length);
   elements.monthPeakDate.textContent =
     peak && peak.school_holiday_population_weight > 0
       ? `${peak.date.slice(5)} / ${percent(peak.school_holiday_population_weight)}`
       : "-";
+}
+
+function monthKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function populateMonthSelect() {
+  const months = [...new Set(state.rows.map((row) => row.date.slice(0, 7)))];
+  elements.monthSelect.innerHTML = months
+    .map((month) => {
+      const [year, monthNumber] = month.split("-");
+      const label = monthNames.format(new Date(Number(year), Number(monthNumber) - 1, 1));
+      return `<option value="${month}">${label}</option>`;
+    })
+    .join("");
 }
 
 function renderCalendar() {
@@ -304,6 +320,7 @@ function renderDetails() {
 }
 
 function render() {
+  elements.monthSelect.value = monthKey(state.currentMonth);
   updateSummary();
   renderCalendar();
   renderDetails();
@@ -325,6 +342,13 @@ function wireControls() {
       state.currentMonth.getMonth() + 1,
       1,
     );
+    render();
+  });
+
+  elements.monthSelect.addEventListener("change", (event) => {
+    const [year, month] = event.target.value.split("-").map(Number);
+    state.currentMonth = new Date(year, month - 1, 1);
+    state.selectedDate = `${event.target.value}-01`;
     render();
   });
 
@@ -361,6 +385,7 @@ async function init() {
 
   state.rows = parseCsv(csvText).map(normalizeRow);
   state.byDate = new Map(state.rows.map((row) => [row.date, row]));
+  populateMonthSelect();
   render();
 }
 

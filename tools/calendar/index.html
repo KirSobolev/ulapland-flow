@@ -23,15 +23,6 @@
         <div>
           <p class="eyebrow">Calendar tool</p>
         </div>
-        <div class="month-controls">
-          <button class="icon-button" id="previousMonth" type="button" aria-label="Previous month">
-            <span aria-hidden="true">‹</span>
-          </button>
-          <div class="current-month" id="currentMonth">Loading</div>
-          <button class="icon-button" id="nextMonth" type="button" aria-label="Next month">
-            <span aria-hidden="true">›</span>
-          </button>
-        </div>
       </section>
 
       <section class="summary-strip" aria-label="Month summary">
@@ -47,9 +38,16 @@
           <span class="summary-label">Peak date</span>
           <strong id="monthPeakDate">-</strong>
         </div>
-        <div>
-          <span class="summary-label">Rows loaded</span>
-          <strong id="rowsLoaded">0</strong>
+        <div class="summary-month-control">
+          <div class="month-controls">
+            <button class="icon-button" id="previousMonth" type="button" aria-label="Previous month">
+              <span aria-hidden="true">&lsaquo;</span>
+            </button>
+            <div class="current-month" id="currentMonth">Loading</div>
+            <button class="icon-button" id="nextMonth" type="button" aria-label="Next month">
+              <span aria-hidden="true">&rsaquo;</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -76,6 +74,11 @@
             <div><span class="swatch swatch-high"></span> High</div>
             <div><span class="swatch swatch-public"></span> Public holiday</div>
           </div>
+
+          <label class="month-jump">
+            <span>Month</span>
+            <select id="monthSelect" aria-label="Jump to month"></select>
+          </label>
         </aside>
 
         <section class="calendar-panel" aria-label="Calendar month view">
