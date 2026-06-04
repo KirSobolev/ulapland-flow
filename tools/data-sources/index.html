@@ -379,10 +379,10 @@
         granularity: "Per flight",
         status: "Historical",
         description: "Completes Finavia dataset with information about gates, actual timetable, airline and etc.",
-        extensionNote: "Possible to obtain more data, but the source is commercial and not free. Also historical data is limited for up to 6 month back?",
+        extensionNote: "Possible to obtain more data, but the source is commercial and not free. Also historical data is limited for up to 12 month back",
         segments: [
           { start: "2024-02-01", end: "2024-11-01", type: "current"},
-          { start: { relativeTo: "today", months: -6 }, end: { relativeTo: "today" }, type: "available_on_request" }
+          { start: { relativeTo: "today", months: -12 }, end: { relativeTo: "today" }, type: "available_on_request" }
         ],
         links: [
           { label: "Aviation Edge", url: "https://dev.azure.com/universityoflapland/Untangling%20People%20Flow/_wiki/wikis/Untangling-People-Flow.wiki/4/Description-(Silver)" },
